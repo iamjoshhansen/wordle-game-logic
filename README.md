@@ -6,7 +6,7 @@ To be used to manage the game.
 
 ## Usage
 ```typescript
-import { WordleGame } from '@this-is-josh-hansen/wordle-game-logic';
+import { WordleGameLogic } from '@this-is-josh-hansen/wordle-game-logic';
 
 const words = `
 alpha
@@ -16,8 +16,15 @@ final
 hello
 `;
 
-const game = new WordleGame('hello', words);
+const gameLogic = new WordleGameLogic('hello', words);
 
+logic.on('rows', rows => {
+  // render the view with the updated game data
+});
+
+/**
+ * Pass keyboard events to the game logic
+ */
 window.addEventListener('keydown', (event:KeyboardEvent) => {
   if (event.metaKey || event.altKey || event.ctrlKey) {
     return;
@@ -25,13 +32,13 @@ window.addEventListener('keydown', (event:KeyboardEvent) => {
 
   // Handle Backspace
   if (event.key === 'Backspace') {
-    game.removeLetterFromInput();
+    gameLogic.removeLetterFromInput();
     return;
   }
 
   // Handle Enter
   if (event.key === 'Enter') {
-    game.acceptCurrentInput();
+    gameLogic.acceptCurrentInput();
     return;
   }
 
@@ -40,6 +47,6 @@ window.addEventListener('keydown', (event:KeyboardEvent) => {
     return;
   }
 
-  game.addLetterToInput(ev.key);
+  gameLogic.addLetterToInput(ev.key);
 });
 ```
