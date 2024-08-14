@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { AcceptanceError, GameState, TileState, WordleGame } from '../src/wordle-game';
+import { AcceptanceError, GameState, TileState, WordleGameLogic } from '../src/wordle-game';
 
 const words = `
 apple
@@ -9,14 +9,14 @@ delta
 sauce
 tiger
 limit
-`;
+`.split('\n');
 
 describe('WordleGame', () => {
   describe('Initial State', () => {
-    let game: WordleGame;
+    let game: WordleGameLogic;
     
     beforeEach(() => {
-      game = new WordleGame('apple', words);
+      game = new WordleGameLogic('apple', words);
     });
 
     it('is playing', () => {
@@ -51,11 +51,11 @@ describe('WordleGame', () => {
   });
 
   describe('can start typing (setting input)', () => {
-    let game: WordleGame;
+    let game: WordleGameLogic;
     let error: string;
     
     beforeEach(() => {
-      game = new WordleGame('apple', words);
+      game = new WordleGameLogic('apple', words);
       game.input = 'a';
     });
 
@@ -95,11 +95,11 @@ describe('WordleGame', () => {
   });
 
   describe('can start typing (adding a letter)', () => {
-    let game: WordleGame;
+    let game: WordleGameLogic;
     let letter: string;
     
     beforeEach(() => {
-      game = new WordleGame('apple', words);
+      game = new WordleGameLogic('apple', words);
       letter = game.addLetterToInput('a');
     });
 
@@ -143,11 +143,11 @@ describe('WordleGame', () => {
   });
 
   describe('can add a second letter', () => {
-    let game: WordleGame;
+    let game: WordleGameLogic;
     let letter: string;
     
     beforeEach(() => {
-      game = new WordleGame('apple', words);
+      game = new WordleGameLogic('apple', words);
       letter = game.addLetterToInput('a');
       letter = game.addLetterToInput('z');
     });
@@ -192,11 +192,11 @@ describe('WordleGame', () => {
   });
 
   describe('can call add letter when size is reached, but nothing changes', () => {
-    let game: WordleGame;
+    let game: WordleGameLogic;
     let letter: string;
     
     beforeEach(() => {
-      game = new WordleGame('apple', words);
+      game = new WordleGameLogic('apple', words);
       letter = game.addLetterToInput('a');
       letter = game.addLetterToInput('p');
       letter = game.addLetterToInput('p');
@@ -246,11 +246,11 @@ describe('WordleGame', () => {
   });
 
   describe('can delete a letter', () => {
-    let game: WordleGame;
+    let game: WordleGameLogic;
     let letter: string;
     
     beforeEach(() => {
-      game = new WordleGame('apple', words);
+      game = new WordleGameLogic('apple', words);
       game.input = 'apple';
       letter = game.removeLetterFromInput();
     });
@@ -295,11 +295,11 @@ describe('WordleGame', () => {
   });
 
   describe('can call delete a letter from empty input, but nothing changes', () => {
-    let game: WordleGame;
+    let game: WordleGameLogic;
     let letter: string;
     
     beforeEach(() => {
-      game = new WordleGame('apple', words);
+      game = new WordleGameLogic('apple', words);
       letter = game.removeLetterFromInput();
     });
 
@@ -343,11 +343,11 @@ describe('WordleGame', () => {
   });
 
   describe('can win on the first try', () => {
-    let game: WordleGame;
+    let game: WordleGameLogic;
     let error: string;
     
     beforeEach(() => {
-      game = new WordleGame('apple', words);
+      game = new WordleGameLogic('apple', words);
       game.input = 'apple';
       error = game.acceptCurrentInput();
     });
@@ -374,11 +374,11 @@ describe('WordleGame', () => {
   });
 
   describe('Can input unknown words', () => {
-    let game: WordleGame;
+    let game: WordleGameLogic;
     let error: string;
     
     beforeEach(() => {
-      game = new WordleGame('apple', words);
+      game = new WordleGameLogic('apple', words);
       game.input = 'zebra';
     });
 
@@ -422,11 +422,11 @@ describe('WordleGame', () => {
   });
 
   describe('does not accept unknown words', () => {
-    let game: WordleGame;
+    let game: WordleGameLogic;
     let error: string;
     
     beforeEach(() => {
-      game = new WordleGame('apple', words);
+      game = new WordleGameLogic('apple', words);
       game.input = 'zebra';
       error = game.acceptCurrentInput();
     });
@@ -475,11 +475,11 @@ describe('WordleGame', () => {
   });
 
   describe('accepts known words', () => {
-    let game: WordleGame;
+    let game: WordleGameLogic;
     let error: string;
     
     beforeEach(() => {
-      game = new WordleGame('apple', words);
+      game = new WordleGameLogic('apple', words);
       game.input = 'sauce';
       error = game.acceptCurrentInput();
     });
@@ -532,11 +532,11 @@ describe('WordleGame', () => {
   });
 
   describe('can type after accepted guess', () => {
-    let game: WordleGame;
+    let game: WordleGameLogic;
     let error: string;
     
     beforeEach(() => {
-      game = new WordleGame('apple', words);
+      game = new WordleGameLogic('apple', words);
       game.input = 'sauce';
       error = game.acceptCurrentInput();
       game.input = 'ap';
@@ -586,10 +586,10 @@ describe('WordleGame', () => {
   });
 
   describe('allows but clips long guesses', () => {
-    let game: WordleGame;
+    let game: WordleGameLogic;
     
     beforeEach(() => {
-      game = new WordleGame('apple', words);
+      game = new WordleGameLogic('apple', words);
       game.input = 'tiger_bones';
     });
 
@@ -633,12 +633,12 @@ describe('WordleGame', () => {
   });
 
   describe('input has no effect when limit is reached', () => {
-    let game: WordleGame;
+    let game: WordleGameLogic;
     let errors: string[];
     
     beforeEach(() => {
       errors = [];
-      game = new WordleGame('apple', words);
+      game = new WordleGameLogic('apple', words);
 
       game.input = 'alpha';
       errors.push(game.acceptCurrentInput());
@@ -720,12 +720,12 @@ describe('WordleGame', () => {
   });
 
   describe('does not accept input when limit is reached', () => {
-    let game: WordleGame;
+    let game: WordleGameLogic;
     let errors: string[];
     
     beforeEach(() => {
       errors = [];
-      game = new WordleGame('apple', words);
+      game = new WordleGameLogic('apple', words);
 
       game.input = 'alpha';
       errors.push(game.acceptCurrentInput());

@@ -6,7 +6,7 @@ To be used to manage the game.
 
 ## Usage
 ```typescript
-import { WordleGame } from 'iamjoshhansen/wordle-game-logic';
+import { WordleGame } from '@this-is-josh-hansen/wordle-game-logic';
 
 const words = `
 alpha

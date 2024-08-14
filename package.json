@@ -1,24 +1,31 @@
 {
-  "name": "wordle-game-logic",
+  "name": "@this-is-josh-hansen/wordle-game-logic",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/wordle-game.js",
+  "main": "src/wordle-game.ts",
   "scripts": {
     "build": "tsc",
-    "test": "mocha --watch"
+    "build:watch": "tsc --watch",
+    "test": "mocha",
+    "test:watch": "mocha --watch"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@this-is-josh-hansen/event-emitter": "^1.0.2"
+  },
+  "repository": {
+    "type": "github",
+    "url": "https://github.com/thisisjoshhansen/wordle-game-logic"
   },
   "devDependencies": {
-    "ts-node": "^10.9.2",
     "@types/chai": "^4.3.17",
     "@types/mocha": "^10.0.7",
     "@types/node": "^22.2.0",
     "chai": "^4",
     "mocha": "^10.7.3",
+    "ts-node": "^10.9.2",
     "typescript": "^5.5.4"
   }
 }

@@ -1,3 +1,5 @@
+import { createEmitterListener, EmitMethod, OnMethod } from "@this-is-josh-hansen/event-emitter";
+
 export enum GameState {
   playing = 'playing',
   success = 'success',
@@ -19,10 +21,26 @@ export enum AcceptanceError {
   unknown_word = 'Not in word list',
 }
 
-export class WordleGame {
+type GameEvents = {
+  state: [state:GameState],
+  input: [value:string],
+  rows: [rows:string[]],
+  flip: [rows:boolean[]],
+  color: [rows:TileState[][]],
+  error: [message:string],
+};
+
+export class WordleGameLogic {
+  private readonly emit: EmitMethod<GameEvents>;
+  public readonly on: OnMethod<GameEvents>;
+
   private _state = GameState.playing;
   private set state(state:GameState) {
+    const oldState = this.state;
     this._state = state;
+    if (oldState !== this._state) {
+      this.emit('state', this._state);
+    }
   }
   get state(): GameState {
     return this._state;
@@ -30,6 +48,10 @@ export class WordleGame {
 
   public readonly answer: string;
   private readonly allWordsSet: Set<string>;
+
+  /**
+   * Word Character Count
+   */
   private readonly size: number;
 
   private readonly _guesses: string[] = [];
@@ -42,25 +64,32 @@ export class WordleGame {
     return this._input;
   }
   set input(word:string) {
+    const oldWord = this._input;
     this._input = word
       .substring(0,5)
       .toUpperCase();
+    
+    if (this._input !== oldWord) {
+      this.emit('input', this._input);
+      this.emit('rows', this.allRows);
+      this.emit('color', this.allColors);
+    }
   }
 
   get allRows(): string[] {
     const result = [...this.guesses];
     
-    if (result.length >= this.limit) {
+    if (result.length >= this.guessLimit) {
       return result;
     }
 
     result.push(this.input.padEnd(this.size,' '));
     
-    if (result.length >= this.limit) {
+    if (result.length >= this.guessLimit) {
       return result;
     }
     
-    const remaining = this.limit - result.length;
+    const remaining = this.guessLimit - result.length;
     for (let i=0; i<remaining; i++) {
       result.push(' '.repeat(this.size));
     }
@@ -98,15 +127,18 @@ export class WordleGame {
     });
   }
 
-  constructor(answer: string, words:string, public readonly limit=6) {
+  constructor(answer: string, words:string[], public readonly guessLimit=6) {
     this.answer = answer.toUpperCase();
     this.size = answer.length;
     this.allWordsSet = new Set(words
-        .split('\n')
         .map(x => x.trim())
         .filter(x => x.length === this.size)
         .map(x => x.toUpperCase())
     );
+
+    const { emit, listener } = createEmitterListener<GameEvents>();
+    this.emit = emit;
+    this.on = listener.on;
   }
 
   /**
@@ -118,24 +150,31 @@ export class WordleGame {
   acceptCurrentInput(): AcceptanceError {
     const word = this.input;
 
-    if (this._guesses.length >= this.limit) {
+    if (this._guesses.length >= this.guessLimit) {
+      this.emit('error', AcceptanceError.out_of_guesses);
       return AcceptanceError.out_of_guesses;
     }
     
     if (word.length !== this.size) {
+      this.emit('error', AcceptanceError.letter_count);
       return AcceptanceError.letter_count;
     }
 
     if (!this.allWordsSet.has(word)) {
+      this.emit('error', AcceptanceError.unknown_word);
       return AcceptanceError.unknown_word;
     }
 
     this._guesses.push(word);
     this.input = '';
 
+    this.emit('rows', this.allRows);
+    this.emit('color', this.allColors);
+    this.emit('flip', this.allFlipped);
+
     if (word === this.answer) {
       this.state = GameState.success;
-    } else if (this._guesses.length === this.limit) {
+    } else if (this._guesses.length === this.guessLimit) {
       this.state = GameState.failure;
     }
 
