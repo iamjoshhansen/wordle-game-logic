@@ -1,23 +1,28 @@
 {
   "name": "@this-is-josh-hansen/wordle-game-logic",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "",
-  "main": "src/wordle-game.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",
     "test": "mocha",
-    "test:watch": "mocha --watch"
+    "test:watch": "mocha --watch",
+    "prepublishOnly": "pnpm run build"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@this-is-josh-hansen/event-emitter": "^1.0.2"
+    "@this-is-josh-hansen/event-emitter": "^1.0.3"
   },
   "repository": {
     "type": "github",
-    "url": "https://github.com/thisisjoshhansen/wordle-game-logic"
+    "url": "git+https://github.com/thisisjoshhansen/wordle-game-logic.git"
   },
   "publishConfig": {
     "registry": "https://www.npmjs.com/package/@this-is-josh-hansen/wordle-game-logic",
@@ -26,8 +31,8 @@
   "devDependencies": {
     "@types/chai": "^4.3.17",
     "@types/mocha": "^10.0.7",
-    "@types/node": "^22.2.0",
-    "chai": "^4",
+    "@types/node": "^22.3.0",
+    "chai": "^4.*",
     "mocha": "^10.7.3",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.4"

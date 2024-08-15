@@ -18,7 +18,7 @@ hello
 
 const gameLogic = new WordleGameLogic('hello', words);
 
-logic.on('rows', rows => {
+logic.on('boardUpdate', board => {
   // render the view with the updated game data
 });
 

@@ -8,5 +8,5 @@
     "sourceMap": true,
     "declaration": true
   },
-  "include": ["src/**/*", "test/calculator.test.ts"]
+  "include": ["src/**/*"]
 }
