@@ -523,6 +523,65 @@ describe('WordleGame', () => {
     });
   });
 
+  describe('after winning, input is ignored', () => {
+    let game: WordleGameLogic;
+    let error: string;
+    
+    beforeEach(() => {
+      game = new WordleGameLogic('apple', words);
+      game.input = 'apple';
+      error = game.acceptCurrentInput();
+      game.addLetterToInput('Z');
+    });
+
+    it('no error was returned', () => {
+      expect(error).to.equal(AcceptanceError.none);
+    });
+    
+    it('game state is still success', () => {
+      expect(game.state).to.equal(GameState.won);
+    });
+
+    it('input is still empty', () => {
+      expect(game.input).to.equal('');
+    });
+
+    it('game guesses is an array of just that guess', () => {
+      expect(game.guesses).to.eql(['APPLE']);
+    });
+
+    it('board is correct', () => {
+      const getTileRow = getTileRowFactory(game.answer);
+      
+      expect(game.board).eql([
+        {
+          flipped: true,
+          tiles: getTileRow('apple')
+        },
+        {
+          flipped: false,
+          tiles: emptyRow,
+        },
+        {
+          flipped: false,
+          tiles: emptyRow,
+        },
+        {
+          flipped: false,
+          tiles: emptyRow,
+        },
+        {
+          flipped: false,
+          tiles: emptyRow,
+        },
+        {
+          flipped: false,
+          tiles: emptyRow,
+        },
+      ]);
+    });
+  });
+
   describe('Can input unknown words', () => {
     let game: WordleGameLogic;
     let error: string;
@@ -906,7 +965,7 @@ describe('WordleGame', () => {
     });
 
     it('input is unchanged', () => {
-      expect(game.input).to.equal('WHAT');
+      expect(game.input).to.equal('');
     });
 
     it('game guesses is correct', () => {
@@ -1000,7 +1059,7 @@ describe('WordleGame', () => {
     });
 
     it('input is unchanged', () => {
-      expect(game.input).to.equal('WHAT');
+      expect(game.input).to.equal('');
     });
 
     it('game guesses is correct', () => {

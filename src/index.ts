@@ -79,6 +79,10 @@ export class WordleGameLogic {
     return this._input;
   }
   set input(word:string) {
+    if (this.state !== GameState.playing) {
+      return;
+    }
+    
     const oldWord = this._input;
     this._input = word
       .substring(0,5)
